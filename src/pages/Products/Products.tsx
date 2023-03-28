@@ -1,21 +1,25 @@
-import { type Product } from '@/interfaces/products';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { addToCart } from '@/redux/states/cartSlice';
+import { addProducts } from '@/redux/states/productsSlice';
 import { getProducts } from '@/services/getProducts';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import styles from './Products.module.css';
 
 const Products = (): JSX.Element => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     void getProducts().then(products => {
-      setProducts(products);
+      dispatch(addProducts(products));
     });
   }, []);
+
+  const products = useAppSelector(state => state.products.products);
 
   return (
     <main className='page'>
       <ul className={styles.products}>
-        {products.map(product => (
+        {Object.values(products).map(product => (
           <li key={product.id}>
             <article className={styles.product}>
               <figure>
@@ -28,7 +32,9 @@ const Products = (): JSX.Element => {
                 <h1>{product.name}</h1>
                 <p>{product.description}</p>
                 <p>${product.price}</p>
-                <button>Add to Cart 🛒</button>
+                <button onClick={() => dispatch(addToCart(product.id))}>
+                  Add to Cart 🛒
+                </button>
               </div>
             </article>
           </li>
