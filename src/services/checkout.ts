@@ -1,7 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-export interface CartItems {
-  [productID: string]: number;
-}
+export type CartItems = Record<string, number>;
+
 export interface CheckoutResponse {
   success: boolean;
   error?: string;
