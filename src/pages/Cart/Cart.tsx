@@ -4,7 +4,7 @@ import {
   getTotalPrice,
   removeFromCart,
   updateQuantity,
-} from '@/redux/states/cartSlice';
+} from '@/redux/states/cartSlice/cartSlice';
 import classNames from 'classnames';
 import type { ChangeEvent, FormEvent } from 'react';
 import styles from './Cart.module.css';

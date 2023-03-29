@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { addToCart } from '@/redux/states/cartSlice';
-import { addProducts } from '@/redux/states/productsSlice';
+import { addToCart } from '@/redux/states/cartSlice/cartSlice';
+import { addProducts } from '@/redux/states/productsSlice/productsSlice';
 import { getProducts } from '@/services/getProducts';
 import { useEffect } from 'react';
 import styles from './Products.module.css';

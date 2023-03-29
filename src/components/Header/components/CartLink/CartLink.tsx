@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import styles from './CartLink.module.css';
-import { getMemoizedNumItems } from '@/redux/states/cartSlice';
+import { getMemoizedNumItems } from '@/redux/states/cartSlice/cartSlice';
 import { useAppSelector } from '@/redux/hooks';
 
 const CartLink = (): JSX.Element => {
