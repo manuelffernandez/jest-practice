@@ -1,21 +1,35 @@
+import { checkout } from '@/services/checkout';
 import {
+  createAsyncThunk,
   createSelector,
   createSlice,
   type PayloadAction,
 } from '@reduxjs/toolkit';
-import type { AppDispatch, RootState } from '../store';
+import type { RootState } from '../store';
 
 type CheckoutState = 'READY' | 'ERROR' | 'LOADING';
 
 export interface CartState {
   items: Record<string, number>;
   checkoutState: CheckoutState;
+  errorMessage: string;
 }
 
 const initialState: CartState = {
   items: {},
   checkoutState: 'READY',
+  errorMessage: '',
 };
+
+export const checkoutCart = createAsyncThunk(
+  'cart/checkout',
+  async (_, thunkAPI) => {
+    const state = thunkAPI.getState() as RootState;
+    const items = state.cart.items;
+    const response = await checkout(items);
+    return response;
+  }
+);
 
 const cartSlice = createSlice({
   name: 'cart',
@@ -41,28 +55,31 @@ const cartSlice = createSlice({
     },
   },
   extraReducers: function (builder) {
-    builder.addCase('cart/checkout/pending', (state, _) => {
+    builder.addCase(checkoutCart.pending, (state, _) => {
       state.checkoutState = 'LOADING';
     });
-    builder.addCase('cart/checkout/fulfilled', (state, _) => {
-      state.checkoutState = 'READY';
+    builder.addCase(
+      checkoutCart.fulfilled,
+      (state, action: PayloadAction<{ success: boolean }>) => {
+        const { success } = action.payload;
+        if (success) {
+          state.checkoutState = 'READY';
+          state.items = {};
+        } else {
+          state.checkoutState = 'ERROR';
+        }
+      }
+    );
+    builder.addCase(checkoutCart.rejected, (state, action) => {
+      state.checkoutState = 'ERROR';
+      state.errorMessage = action.error.message ?? '';
     });
   },
 });
 
-export function checkout() {
-  return (dispatch: AppDispatch) => {
-    dispatch({ type: 'cart/checkout/pending' });
-    setTimeout(() => {
-      dispatch({ type: 'cart/checkout/fulfilled' });
-    }, 500);
-  };
-}
-
 export const getMemoizedNumItems = createSelector(
   (state: RootState) => state.cart.items,
   items => {
-    console.log('test');
     let numItems = 0;
 
     for (const id in items) {

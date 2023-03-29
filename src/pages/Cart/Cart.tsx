@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import {
-  checkout,
+  checkoutCart,
   getTotalPrice,
   removeFromCart,
   updateQuantity,
@@ -12,22 +12,22 @@ import styles from './Cart.module.css';
 const Cart = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const products = useAppSelector(state => state.products.products);
-  const cart = useAppSelector(state => state.cart.items);
+  const items = useAppSelector(state => state.cart.items);
   const totalPrice = useAppSelector(getTotalPrice);
   const checkoutState = useAppSelector(state => state.cart.checkoutState);
+  const errorMessage = useAppSelector(state => state.cart.errorMessage);
 
   const handleQtyChange = (
     evt: ChangeEvent<HTMLInputElement>,
     id: string
   ): void => {
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    const qty = Number(evt.target.value) || 0;
+    const qty = Number(evt.target.value) ?? 0;
     dispatch(updateQuantity({ id, qty }));
   };
 
   const handleSubmit = (evt: FormEvent<HTMLFormElement>): void => {
     evt.preventDefault();
-    dispatch(checkout());
+    void dispatch(checkoutCart());
   };
 
   const tableClasses = classNames({
@@ -49,7 +49,7 @@ const Cart = (): JSX.Element => {
           </tr>
         </thead>
         <tbody>
-          {Object.entries(cart).map(([id, qty]) => (
+          {Object.entries(items).map(([id, qty]) => (
             <tr key={id}>
               <td>{products[id].name}</td>
               <td>
@@ -84,6 +84,9 @@ const Cart = (): JSX.Element => {
         </tfoot>
       </table>
       <form onSubmit={handleSubmit}>
+        {checkoutState === 'ERROR' && errorMessage !== '' ? (
+          <p className={styles.errorBox}>{errorMessage}</p>
+        ) : null}
         <button className={styles.button} type='submit'>
           Checkout
         </button>
