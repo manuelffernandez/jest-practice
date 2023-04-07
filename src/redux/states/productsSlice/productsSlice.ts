@@ -13,8 +13,8 @@ const productsSlice = createSlice({
   name: 'products',
   initialState,
   reducers: {
-    addProducts(_, action: PayloadAction<Product[]>) {
-      const newProductsState = {};
+    addProducts(state, action: PayloadAction<Product[]>) {
+      const newProductsState = { ...state.products };
 
       action.payload.forEach(product => {
         Object.defineProperty(newProductsState, product.id, {
